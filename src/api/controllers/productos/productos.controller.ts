@@ -76,6 +76,8 @@ export class ProductosController {
     response.status(200).json(productos);
   };
 
+  //hola, este es un comentario
+
   search = async (request: Request, response: Response): Promise<void> => {
     const parsed = searchProductoQuerySchema.safeParse(request.query);
 
