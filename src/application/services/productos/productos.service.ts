@@ -1,6 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import { db } from "../../../infrastructure/db/mysql.connection.js";
-import { NotFoundError } from "../../../shared/errors.js";
+import { ConflictError, NotFoundError } from "../../../shared/errors.js";
 
 const ID_CATEGORIA_DEFAULT = 1;
 

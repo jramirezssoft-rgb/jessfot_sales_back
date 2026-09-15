@@ -1,4 +1,5 @@
 import type { ErrorRequestHandler } from "express";
+import { ConflictError } from "../../shared/errors.js";
 
 export const errorMiddleware: ErrorRequestHandler = (
   error,
@@ -7,6 +8,12 @@ export const errorMiddleware: ErrorRequestHandler = (
   _next,
 ) => {
   console.error(error);
+
+  if (error instanceof ConflictError) {
+    response.status(409).json({ message: error.message });
+    return;
+  }
+
   response.status(500).json({
     error: "Internal server error",
   });
