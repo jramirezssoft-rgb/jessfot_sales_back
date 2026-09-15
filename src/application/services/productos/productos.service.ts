@@ -232,6 +232,17 @@ export class ProductosService {
     try {
       await connection.beginTransaction();
 
+      const [existing] = await connection.execute<RowDataPacket[]>(
+        "SELECT id_producto FROM productos WHERE codigo_barras = ?",
+        [input.codigo_barras],
+      );
+
+      if (existing.length > 0) {
+        throw new Error(
+          `Ya existe un producto con el código de barras ${input.codigo_barras}`,
+        );
+      }
+
       const [productoResult] = await connection.execute<ResultSetHeader>(
         `INSERT INTO productos
           (id_categoria, id_proveedor_principal, codigo_barras, sku, nombre, descripcion, control_lote, control_serie)
