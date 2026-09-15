@@ -1,6 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from "mysql2";
 import { db } from "../../../infrastructure/db/mysql.connection.js";
-import { NotFoundError } from "../../../shared/errors.js";
+import { ConflictError, NotFoundError } from "../../../shared/errors.js";
 
 const ID_CATEGORIA_DEFAULT = 1;
 
@@ -231,6 +231,18 @@ export class ProductosService {
 
     try {
       await connection.beginTransaction();
+
+      const [existing] = await connection.execute<RowDataPacket[]>(
+        `SELECT id_producto
+         FROM productos
+         WHERE codigo_barras = ? OR sku = ?
+         LIMIT 1`,
+        [input.codigo_barras, input.codigo_barras],
+      );
+
+      if (existing.length > 0) {
+        throw new ConflictError("El código de barras o SKU ya está registrado");
+      }
 
       const [productoResult] = await connection.execute<ResultSetHeader>(
         `INSERT INTO productos
